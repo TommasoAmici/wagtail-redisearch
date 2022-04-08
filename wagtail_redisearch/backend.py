@@ -118,6 +118,10 @@ def value_to_redis(value) -> Union[str, int]:
     '1, 2, 3'
     >>> value_to_redis([1, 2, 3])
     '1, 2, 3'
+    >>> value_to_redis(datetime(2020, 1, 1))
+    '2020-01-01T00:00:00'
+    >>> value_to_redis(UUID("5343fec8-de40-47ff-ac3b-65374f87dc61"))
+    '5343fec8-de40-47ff-ac3b-65374f87dc61'
     """
     if isinstance(value, str):
         return value
