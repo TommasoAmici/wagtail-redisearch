@@ -114,6 +114,10 @@ def value_to_redis(value) -> Union[str, int]:
     1
     >>> value_to_redis("wagtail")
     'wagtail'
+    >>> value_to_redis(["1", "2", "3"])
+    '1, 2, 3'
+    >>> value_to_redis([1, 2, 3])
+    '1, 2, 3'
     """
     if isinstance(value, str):
         return value
@@ -122,9 +126,10 @@ def value_to_redis(value) -> Union[str, int]:
     elif isinstance(value, int):
         return value
     elif isinstance(value, list):
-        if len(value) == 0:
-            return ""
-        return value[0]
+        try:
+            return ", ".join(value)
+        except TypeError:
+            return ", ".join([str(v) for v in value])
     elif isinstance(value, datetime):
         return value.isoformat()
     elif isinstance(value, UUID):
