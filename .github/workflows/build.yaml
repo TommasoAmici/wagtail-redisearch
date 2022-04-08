@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - ".github/workflows/**"
       - "wagtail_redisearch/**"
       - "pyproject.toml"
       - "poetry.lock"
