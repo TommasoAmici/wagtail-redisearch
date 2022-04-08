@@ -40,5 +40,5 @@ jobs:
         if: steps.cache.outputs.cache-hit == 'true'
         run: timeout 10s poetry run pip --version || rm -rf .venv
 
-      - run: poetry install --no-dev
+      - run: poetry install
       - run: poetry run pytest tests/
