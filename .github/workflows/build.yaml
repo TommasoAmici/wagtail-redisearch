@@ -23,5 +23,21 @@ jobs:
       - uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        run: |
+          curl -sL https://install.python-poetry.org | python - -y ${{ matrix.bootstrap-args }}
+
+      - name: Set up cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Ensure cache is healthy
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: timeout 10s poetry run pip --version || rm -rf .venv
+
       - run: poetry install --no-dev
       - run: poetry run pytest tests/
