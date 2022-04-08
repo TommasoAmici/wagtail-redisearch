@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 from uuid import UUID
 
 import redis
@@ -35,7 +35,7 @@ from wagtail.search.index import (
 from wagtail.search.query import And, Boost, MatchAll, Not, Or, Phrase, PlainText
 
 WagtailQuery = Union[str, PlainText, Phrase, And, Or, Not, MatchAll]
-WagtailSearchFields = Union[list[str], None]
+WagtailSearchFields = Union[List[str], None]
 
 
 def get_model_root(model):
@@ -264,7 +264,7 @@ def build_query_string_autocomplete(
     return query_string
 
 
-def build_filter_fields(fields: list[str]) -> str:
+def build_filter_fields(fields: List[str]) -> str:
     return UnionNode(*fields).to_string(with_parens=False)
 
 
