@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2022-04-09
+
+[c786930](c7869309a6f88a6ee3698d8118f0948a4ab8c2ba)...[76cffaa](76cffaabc0f898c5d250c74ef7f70606082a9088)
+
+### Documentation
+
+- Updated README with usage instructions ([e771828](e771828734ec949cd8110074cd502634eb5096d5))
+
+### Miscellaneous Tasks
+
+- Updated pyproject.toml with relevant metadata ([76cffaa](76cffaabc0f898c5d250c74ef7f70606082a9088))
+
+### Ci
+
+- When generating changelog fetch entire repo ([1325886](1325886109f1c8f35216452b7d1d2c37ca226339))
+
 ## [0.1.0] - 2022-04-09
 
 ### Bug Fixes
@@ -25,7 +41,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Added vscode settings ([b33ea50](b33ea50f1030c3420ab07d1386357f535df99414))
 - Added test rule to Makefile ([66a72a5](66a72a56ad701afbdf0a5241c6209066309438fc))
 - Added interface for SearchBackend ([c4804eb](c4804ebe60b01981e9379320d5c06d2dc48d21a5))
-- Release v0.1.0 ([e4713ee](e4713ee5fd6684dac205a373fb01685ae393fcc8))
+- Release v0.1.0 ([c786930](c7869309a6f88a6ee3698d8118f0948a4ab8c2ba))
 
 ### Testing
 
