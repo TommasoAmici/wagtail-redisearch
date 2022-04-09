@@ -1,5 +1,5 @@
 test:
-	poetry run pytest --doctest-modules tests/ wagtail_redisearch/
+	poetry run pytest
 
 test-all:
 	tox --parallel

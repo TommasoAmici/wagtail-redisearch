@@ -16,7 +16,24 @@ pytest = "^7.1.1"
 black = "^22.3.0"
 pycodestyle = "^2.8.0"
 pre-commit = "^2.18.1"
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+  "-ra",
+  "-q",
+  "--doctest-modules",
+  "--cov",
+  "--cov-branch",
+  "--cov-report=term-missing",
+  "--cov-report=xml:coverage.xml"
+]
+testpaths = ["tests", "wagtail_redisearch"]
+
+[tool.coverage.report]
+omit = ["*/tests/*"]
