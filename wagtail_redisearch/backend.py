@@ -122,6 +122,8 @@ def value_to_redis(value) -> Union[str, int]:
     '2020-01-01T00:00:00'
     >>> value_to_redis(UUID("5343fec8-de40-47ff-ac3b-65374f87dc61"))
     '5343fec8-de40-47ff-ac3b-65374f87dc61'
+    >>> value_to_redis(None)
+    ''
     """
     if isinstance(value, str):
         return value
@@ -265,6 +267,12 @@ def build_query_string_autocomplete(
 
 
 def build_filter_fields(fields: List[str]) -> str:
+    """
+    Returns union of fields to restrict search to those fields.
+
+    >>> build_filter_fields(["title", "search_description"])
+    'title|search_description'
+    """
     return UnionNode(*fields).to_string(with_parens=False)
 
 
