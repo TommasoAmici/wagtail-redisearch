@@ -6,7 +6,7 @@ description = "A Django app to use RediSearch as a search backend in Wagtail."
 version = "0.1.0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 Django = "^4.0 || ^3.2"
 redis = "^4.0.0"
 wagtail = "^2.15"
