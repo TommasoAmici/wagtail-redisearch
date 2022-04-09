@@ -4,6 +4,16 @@ license = "MIT"
 name = "wagtail-redisearch"
 description = "A Django app to use RediSearch as a search backend in Wagtail."
 version = "0.1.0"
+readme = "README.md"
+repository = "https://github.com/TommasoAmici/wagtail-redisearch"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: Django",
+  "Framework :: Django :: 3.2",
+  "Framework :: Django :: 4",
+  "Framework :: Wagtail",
+  "Framework :: Wagtail :: 2"
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
