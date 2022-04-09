@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>wagtail-redisearch integration</title>
+</head>
+  <body>
+    <main>
+      <h1>wagtail-redisearch</h1>
+      <div>
+        <form hx-get="/search/" hx-trigger="submit" hx-target="#search-results">
+          <label id="search-label">Search:</label>
+          <input
+            id="search"
+            type="search"
+            aria-labelledby="search-label"
+            name="query"
+            placeholder="Type to search..."
+            hx-get="/search/"
+            hx-trigger="keyup changed delay:50ms"
+            hx-target="#search-results"
+          />
+        </form>
+        <div id="search-results"></div>
+      </div>
+    </main>
+    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
+  </body>
+</html>

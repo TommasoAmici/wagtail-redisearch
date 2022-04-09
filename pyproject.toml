@@ -17,6 +17,7 @@ black = "^22.3.0"
 pycodestyle = "^2.8.0"
 pre-commit = "^2.18.1"
 pytest-cov = "^3.0.0"
+pytest-django = "^4.5.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -31,9 +32,10 @@ addopts = [
   "--cov",
   "--cov-branch",
   "--cov-report=term-missing",
-  "--cov-report=xml:coverage.xml"
+  "--cov-report=xml:coverage.xml",
+  "--ds=integration.example.settings"
 ]
-testpaths = ["tests", "wagtail_redisearch"]
+testpaths = ["tests", "wagtail_redisearch", "integration/tests"]
 
 [tool.coverage.report]
-omit = ["*/tests/*"]
+omit = ["*/tests/*", "*/integration/*"]
