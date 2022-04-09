@@ -45,7 +45,7 @@ addopts = [
   "--cov-report=xml:coverage.xml",
   "--ds=integration.example.settings"
 ]
-testpaths = ["tests", "wagtail_redisearch", "integration/tests"]
+testpaths = ["tests", "wagtail_redisearch"]
 
 [tool.coverage.report]
 omit = ["*/tests/*", "*/integration/*"]
