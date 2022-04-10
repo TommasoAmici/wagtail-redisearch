@@ -389,13 +389,6 @@ def build_sort_by(queryset: models.QuerySet, order_by_relevance=True) -> str:
     return " ".join([f"SORTBY {s[0]} {'ASC' if s[1] else 'DESC'}" for s in sort_by])
 
 
-def check_numeric_field(field: models.Field):
-    field_type = field.get_internal_type()
-    redis_field = redis_field_from_type.get(field_type, None)
-    if redis_field != NumericField:
-        raise FilterError(f"{field_type} is not a numeric field")
-
-
 def build_filters(lookup: Lookup, negated=False) -> str:
     if isinstance(lookup, WhereNode):
         children = []
@@ -437,19 +430,23 @@ def build_filters(lookup: Lookup, negated=False) -> str:
             value = f"{{{value}}}"
 
     elif isinstance(lookup, GreaterThan):
-        check_numeric_field(field)
+        if redis_field != NumericField:
+            raise FilterError(f"{field_type} is not a numeric field")
         value = f"[({value} inf]"
 
     elif isinstance(lookup, GreaterThanOrEqual):
-        check_numeric_field(field)
+        if redis_field != NumericField:
+            raise FilterError(f"{field_type} is not a numeric field")
         value = f"[{value} inf]"
 
     elif isinstance(lookup, LessThan):
-        check_numeric_field(field)
+        if redis_field != NumericField:
+            raise FilterError(f"{field_type} is not a numeric field")
         value = f"[-inf ({value}]"
 
     elif isinstance(lookup, LessThanOrEqual):
-        check_numeric_field(field)
+        if redis_field != NumericField:
+            raise FilterError(f"{field_type} is not a numeric field")
         value = f"[-inf {value}]"
 
     elif isinstance(lookup, SubqueryConstraint):
