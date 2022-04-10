@@ -389,39 +389,15 @@ def build_sort_by(queryset: models.QuerySet, order_by_relevance=True) -> str:
     return " ".join([f"SORTBY {s[0]} {'ASC' if s[1] else 'DESC'}" for s in sort_by])
 
 
+def check_numeric_field(field: models.Field):
+    field_type = field.get_internal_type()
+    redis_field = redis_field_from_type.get(field_type, None)
+    if redis_field != NumericField:
+        raise FilterError(f"{field_type} is not a numeric field")
+
+
 def build_filters(lookup: Lookup, negated=False) -> str:
-    if isinstance(lookup, Exact):
-        field = lookup.lhs.field
-        field_name = field.name
-        if field_name == "id":
-            field_name = "wagtail_id"
-
-        field_type = field.get_internal_type()
-        redis_field = redis_field_from_type.get(field_type)
-        if redis_field is None:
-            raise NotImplementedError(
-                f"{field_type} is not yet supported by wagtail-redisearch"
-            )
-
-        value = value_to_redis(lookup.rhs)
-        # for NumericField specify value as both min and max
-        if redis_field == NumericField:
-            value = f"[{value} {value}]"
-        # exact searches shouldn't perform a search, so wrap the value in curly braces
-        else:
-            value = f"{{{value}}}"
-
-        if negated:
-            return f"-@{field_name}:{value}"
-        else:
-            return f"@{field_name}:{value}"
-
-    elif isinstance(lookup, SubqueryConstraint):
-        raise FilterError(
-            "Could not apply filter on search results: Subqueries are not allowed."
-        )
-
-    elif isinstance(lookup, WhereNode):
+    if isinstance(lookup, WhereNode):
         children = []
         for child in lookup.children:
             try:
@@ -438,18 +414,57 @@ def build_filters(lookup: Lookup, negated=False) -> str:
         else:
             raise NotImplementedError(f"Connector {connector} is not supported yet")
 
+    field: models.Field = lookup.lhs.field
+    field_name = field.name
+    if field_name == "id":
+        field_name = "wagtail_id"
+
+    field_type = field.get_internal_type()
+    redis_field = redis_field_from_type.get(field_type)
+    if redis_field is None:
+        raise NotImplementedError(
+            f"{field_type} is not yet supported by wagtail-redisearch"
+        )
+
+    value = value_to_redis(lookup.rhs)
+
+    if isinstance(lookup, Exact):
+        # for NumericField specify value as both min and max
+        if redis_field == NumericField:
+            value = f"[{value} {value}]"
+        # exact searches shouldn't perform a search, so wrap the value in curly braces
+        else:
+            value = f"{{{value}}}"
+
     elif isinstance(lookup, GreaterThan):
-        raise FilterError("Cannot perform GreaterThan lookup in RediSearch")
+        check_numeric_field(field)
+        value = f"[({value} inf]"
+
     elif isinstance(lookup, GreaterThanOrEqual):
-        raise FilterError("Cannot perform GreaterThanOrEqual lookup in RediSearch")
+        check_numeric_field(field)
+        value = f"[{value} inf]"
+
     elif isinstance(lookup, LessThan):
-        raise FilterError("Cannot perform LessThan lookup in RediSearch")
+        check_numeric_field(field)
+        value = f"[-inf ({value}]"
+
     elif isinstance(lookup, LessThanOrEqual):
-        raise FilterError("Cannot perform LessThanOrEqual lookup in RediSearch")
+        check_numeric_field(field)
+        value = f"[-inf {value}]"
+
+    elif isinstance(lookup, SubqueryConstraint):
+        raise FilterError(
+            "Could not apply filter on search results: Subqueries are not allowed."
+        )
     else:
         raise FilterError(
             f"Could not apply filter on search results: Unknown where node: {str(type(lookup))}"
         )
+
+    if negated:
+        return f"-@{field_name}:{value}"
+    else:
+        return f"@{field_name}:{value}"
 
 
 def build_query(

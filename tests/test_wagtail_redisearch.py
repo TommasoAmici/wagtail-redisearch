@@ -33,6 +33,26 @@ def test_build_filters():
     f = build_filters(queryset.query.where)
     assert f == "@wagtail_id:[123 123]"
 
+    queryset = Page.objects.filter(id__gt=123)
+    f = build_filters(queryset.query.where)
+    assert f == "@wagtail_id:[(123 inf]"
+
+    queryset = Page.objects.filter(id__gte=123)
+    f = build_filters(queryset.query.where)
+    assert f == "@wagtail_id:[123 inf]"
+
+    queryset = Page.objects.filter(id__lt=123)
+    f = build_filters(queryset.query.where)
+    assert f == "@wagtail_id:[-inf (123]"
+
+    queryset = Page.objects.filter(id__lte=123)
+    f = build_filters(queryset.query.where)
+    assert f == "@wagtail_id:[-inf 123]"
+
+    queryset = Page.objects.exclude(id__lte=123)
+    f = build_filters(queryset.query.where)
+    assert f == "-@wagtail_id:[-inf 123]"
+
     queryset = Page.objects.live().exclude(id=123)
     f = build_filters(queryset.query.where)
     assert f == "@live:{1} -@wagtail_id:[123 123]"
