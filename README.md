@@ -1,3 +1,9 @@
+[![!PyPi version](https://img.shields.io/pypi/v/wagtail-redisearch.svg)](https://pypi.org/project/wagtail-redisearch/)
+[![!Python versions](https://img.shields.io/pypi/pyversions/wagtail-redisearch.svg)](https://pypi.org/project/wagtail-redisearch/)
+[![!CI/CD status](https://github.com/TommasoAmici/wagtail-redisearch/actions/workflows/build.yaml/badge.svg)](https://github.com/TommasoAmici/wagtail-redisearch/actions/workflows/build.yaml)
+[![!Code coverage status](https://codecov.io/gh/TommasoAmici/wagtail-redisearch/branch/main/graph/badge.svg)](https://codecov.io/gh/TommasoAmici/wagtail-redisearch)
+[![!Formatted with Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # wagtail-redisearch
 
 A Django app to use [RediSearch](https://redis.com/modules/redis-search/) as a search
