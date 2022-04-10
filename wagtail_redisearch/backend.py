@@ -504,7 +504,6 @@ class RediSearchResults(BaseSearchResults):
             self.order_by_relevance,
             self.autocomplete,
         )
-        print(query.query_string())
         results = self.index.ft.search(query)
         return self.queryset.filter(id__in=[doc.wagtail_id for doc in results.docs])
 
