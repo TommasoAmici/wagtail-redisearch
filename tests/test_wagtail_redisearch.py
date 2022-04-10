@@ -52,7 +52,7 @@ def test_build_filters():
     f = build_filters(queryset.query.where)
     assert (
         f
-        == "@live:{1} @first_published_at:{2020-01-01T00:00:00+00:00} @search_description:{foo} -@wagtail_id:[123 123]"
+        == "@live:{1} @first_published_at:[1577836800.0 1577836800.0] @search_description:{foo} -@wagtail_id:[123 123]"
     )
 
 

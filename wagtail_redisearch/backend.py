@@ -68,7 +68,7 @@ redis_field_from_type = {
     "BooleanField": TagField,
     "PositiveIntegerField": NumericField,
     "IntegerField": NumericField,
-    "DateTimeField": TextField,
+    "DateTimeField": NumericField,
     "UUIDField": TextField,
 }
 
@@ -118,8 +118,9 @@ def value_to_redis(value) -> Union[str, int]:
     '1, 2, 3'
     >>> value_to_redis([1, 2, 3])
     '1, 2, 3'
-    >>> value_to_redis(datetime(2020, 1, 1))
-    '2020-01-01T00:00:00'
+    >>> from datetime import timezone
+    >>> value_to_redis(datetime(2020, 1, 1, tzinfo=timezone.utc))
+    1577836800.0
     >>> value_to_redis(UUID("5343fec8-de40-47ff-ac3b-65374f87dc61"))
     '5343fec8-de40-47ff-ac3b-65374f87dc61'
     >>> value_to_redis(None)
@@ -137,7 +138,7 @@ def value_to_redis(value) -> Union[str, int]:
         except TypeError:
             return ", ".join([str(v) for v in value])
     elif isinstance(value, datetime):
-        return value.isoformat()
+        return value.timestamp()
     elif isinstance(value, UUID):
         return str(value)
     elif value is None:
