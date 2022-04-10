@@ -4,9 +4,36 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2022-04-10
+
+[0a3d1c8](0a3d1c8bba45ddbc9e082d2f58b90136da5471ee)...[7f11e2a](7f11e2a51815fa50732eeba3eb3066471b859ee5)
+
+### Breaking changes
+
+- Map Django DateTimeField to NumericField in Redis ([01d9ced](01d9cedb421bfd02475fe08cc3192ea0dcdf07ac))
+
+### Bug Fixes
+
+- Removed print statement when performing a search ([5f21c7a](5f21c7ac343913984b3c67872a7da1314a55f3fb))
+- Use NumericField instead of TextField for object IDs ([dc94208](dc942080b192ea66c0102e677d18c6a2efe4215a))
+
+### Features
+
+- Added support for GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual lookups ([7f11e2a](7f11e2a51815fa50732eeba3eb3066471b859ee5))
+
+### Miscellaneous Tasks
+
+- Added rule to identify breaking changes in git cliff config ([ae49df3](ae49df37eb34369baf0989f3f1c349a52057e11c))
+
+### Testing
+
+- Added tests for get_model_root ([2f2b01a](2f2b01a1ffa54fd6440695874a84c72e2492002a))
+- Added test for build_filters ([3225fb9](3225fb9c7fb33a9ec06a3f04afa935340a73c912))
+- Added test cases to test_build_filters ([c3ed3be](c3ed3beca567a9372af6868eb72b15941c4aab51))
+
 ## [0.1.1] - 2022-04-09
 
-[c786930](c7869309a6f88a6ee3698d8118f0948a4ab8c2ba)...[76cffaa](76cffaabc0f898c5d250c74ef7f70606082a9088)
+[c786930](c7869309a6f88a6ee3698d8118f0948a4ab8c2ba)...[0a3d1c8](0a3d1c8bba45ddbc9e082d2f58b90136da5471ee)
 
 ### Documentation
 
@@ -15,6 +42,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Miscellaneous Tasks
 
 - Updated pyproject.toml with relevant metadata ([76cffaa](76cffaabc0f898c5d250c74ef7f70606082a9088))
+- Release v0.1.1 ([0a3d1c8](0a3d1c8bba45ddbc9e082d2f58b90136da5471ee))
 
 ### Ci
 
