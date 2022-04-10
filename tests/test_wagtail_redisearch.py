@@ -1,6 +1,6 @@
-from django.db.models.expressions import Col
-from django.db.models.lookups import Exact
-from django.db.models.sql.where import WhereNode
+from datetime import datetime, timezone
+
+from django.db.models import Q
 from integration.home.models import BasePage
 from wagtail.core.models import Page
 from wagtail_redisearch.backend import (
@@ -31,15 +31,29 @@ def test_build_filters():
 
     queryset = Page.objects.filter(id=123)
     f = build_filters(queryset.query.where)
-    assert f == "@wagtail_id:{123}"
+    assert f == "@wagtail_id:[123 123]"
 
     queryset = Page.objects.live().exclude(id=123)
     f = build_filters(queryset.query.where)
-    assert f == "@live:{1} -@wagtail_id:{123}"
+    assert f == "@live:{1} -@wagtail_id:[123 123]"
 
-    queryset = Page.objects.live().filter(search_description="foo").exclude(id=123)
+    queryset = Page.objects.filter(Q(id=123) | Q(id=456))
     f = build_filters(queryset.query.where)
-    assert f == "@live:{1} @search_description:{foo} -@wagtail_id:{123}"
+    assert f == "(@wagtail_id:[123 123]|@wagtail_id:[456 456])"
+
+    queryset = (
+        Page.objects.live()
+        .filter(
+            search_description="foo",
+            first_published_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
+        )
+        .exclude(id=123)
+    )
+    f = build_filters(queryset.query.where)
+    assert (
+        f
+        == "@live:{1} @first_published_at:{2020-01-01T00:00:00+00:00} @search_description:{foo} -@wagtail_id:[123 123]"
+    )
 
 
 def test_RediSearchModelIndex():

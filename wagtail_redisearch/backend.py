@@ -162,7 +162,7 @@ class RediSearchModelIndex:
         return self.client.ft(self.name)
 
     def create(self):
-        mapping = {"wagtail_id": TextField("wagtail_id", weight=0)}
+        mapping = {"wagtail_id": NumericField("wagtail_id")}
         try:
             self.ft.create_index(fields=mapping.values())
             return self
@@ -390,12 +390,26 @@ def build_sort_by(queryset: models.QuerySet, order_by_relevance=True) -> str:
 
 def build_filters(lookup: Lookup, negated=False) -> str:
     if isinstance(lookup, Exact):
-        field_name = lookup.lhs.field.name
+        field = lookup.lhs.field
+        field_name = field.name
         if field_name == "id":
             field_name = "wagtail_id"
+
+        field_type = field.get_internal_type()
+        redis_field = redis_field_from_type.get(field_type)
+        if redis_field is None:
+            raise NotImplementedError(
+                f"{field_type} is not yet supported by wagtail-redisearch"
+            )
+
         value = value_to_redis(lookup.rhs)
-        # Exact lookups should only search against Tag fields
-        value = f"{{{value}}}"
+        # for NumericField specify value as both min and max
+        if redis_field == NumericField:
+            value = f"[{value} {value}]"
+        # exact searches shouldn't perform a search, so wrap the value in curly braces
+        else:
+            value = f"{{{value}}}"
+
         if negated:
             return f"-@{field_name}:{value}"
         else:
