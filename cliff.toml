@@ -41,6 +41,7 @@ conventional_commits = true
 filter_unconventional = true
 # regex for parsing and grouping commits
 commit_parsers = [
+  { message = ".*!", group = "Breaking changes" },
   { message = "^feat", group = "Features" },
   { message = "^fix", group = "Bug Fixes" },
   { message = "^doc", group = "Documentation" },
