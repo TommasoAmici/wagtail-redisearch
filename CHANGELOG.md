@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2022-04-10
+
+[4506df2](4506df29824a91d56c66841c1f26c2be79abc04e)...[728dbd0](728dbd025f2860e7c56721d96c0f83572436bce8)
+
+### Performance
+
+- Avoid looking up field type and redis field twice for numeric lookups ([728dbd0](728dbd025f2860e7c56721d96c0f83572436bce8))
+
 ## [0.2.0] - 2022-04-10
 
-[0a3d1c8](0a3d1c8bba45ddbc9e082d2f58b90136da5471ee)...[7f11e2a](7f11e2a51815fa50732eeba3eb3066471b859ee5)
+[0a3d1c8](0a3d1c8bba45ddbc9e082d2f58b90136da5471ee)...[4506df2](4506df29824a91d56c66841c1f26c2be79abc04e)
 
 ### Breaking changes
 
@@ -24,6 +32,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Miscellaneous Tasks
 
 - Added rule to identify breaking changes in git cliff config ([ae49df3](ae49df37eb34369baf0989f3f1c349a52057e11c))
+- Release v0.2.0 ([4506df2](4506df29824a91d56c66841c1f26c2be79abc04e))
 
 ### Testing
 
