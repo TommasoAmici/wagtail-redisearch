@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Union
 from uuid import UUID
 
@@ -132,6 +132,8 @@ def value_to_redis(value) -> Union[str, int]:
     >>> from datetime import timezone
     >>> value_to_redis(datetime(2020, 1, 1, tzinfo=timezone.utc))
     1577836800.0
+    >>> value_to_redis(date(2020, 1, 1))
+    1577836800.0
     >>> value_to_redis(UUID("5343fec8-de40-47ff-ac3b-65374f87dc61"))
     '5343fec8-de40-47ff-ac3b-65374f87dc61'
     >>> value_to_redis(None)
@@ -150,6 +152,8 @@ def value_to_redis(value) -> Union[str, int]:
             return ", ".join([str(v) for v in value])
     elif isinstance(value, datetime):
         return value.timestamp()
+    elif isinstance(value, date):
+        return datetime(value.year, value.month, value.day).timestamp()
     elif isinstance(value, UUID):
         return str(value)
     elif value is None:
