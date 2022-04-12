@@ -15,7 +15,7 @@ from django.db.models.lookups import (
 from django.db.models.sql.where import SubqueryConstraint, WhereNode
 from redis import Redis
 from redis.commands.search.field import NumericField, TagField, TextField
-from redis.commands.search.indexDefinition import IndexDefinition
+from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from redis.commands.search.querystring import DistjunctUnion, IntersectNode, UnionNode
 from wagtail.search.backends.base import (
@@ -195,7 +195,9 @@ class RediSearchModelIndex:
         try:
             self.ft.create_index(
                 fields=mapping.values(),
-                definition=IndexDefinition(prefix=[self.index_prefix]),
+                definition=IndexDefinition(
+                    prefix=[self.index_prefix], index_type=IndexType.HASH
+                ),
             )
             return self
         except redis.exceptions.ResponseError as e:
