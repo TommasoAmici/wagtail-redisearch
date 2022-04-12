@@ -4,9 +4,34 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2022-04-12
+
+[48f93de](48f93de2e765771100a2c340f23bb77afc5d369a)...[d01440e](d01440e142de381b2612f5daa3d3d7cafd6dadc5)
+
+### Bug Fixes
+
+- Specify prefix when creating index ([1328454](132845427b2935cb32b53f56eba47a9137bde9c6))
+- Specify index type HASH when creating index ([5807d0a](5807d0a14b65467ae73bdbea0ff5f673fbe1d854))
+- To store time as a numeric field it needs to be formatted as a number ([7f71b57](7f71b579c7df93109062a621d04a8ea2d39274f9))
+
+### Styling
+
+- Added isort configuration ([d01440e](d01440e142de381b2612f5daa3d3d7cafd6dadc5))
+
+### Testing
+
+- Added tests for get_redis_field ([09fb82e](09fb82ec648782282c72d405ac2d2fc761585bdc))
+- Added fixtures and search tests ([856cec9](856cec96e7bdd37b09ff88bbc5293d2a606a2f86))
+- Added autocomplete test ([ab46c81](ab46c81c1b5475b9f00134809f59fba4c718e463))
+
+### Ci
+
+- Always run new tests ([341bd93](341bd93f26a31af9a784ad41980e8fafb94f4165))
+- Added redisearch service to test workflows ([bd3e2c7](bd3e2c7e7d81c6aaa87f359f5c01bec2a329738d))
+
 ## [0.3.1] - 2022-04-12
 
-[cf919a6](cf919a65ddf992afd843b131172a99dd5dc814b1)...[2957229](295722935e045efc3d7bab396dad31d7565ebc10)
+[cf919a6](cf919a65ddf992afd843b131172a99dd5dc814b1)...[48f93de](48f93de2e765771100a2c340f23bb77afc5d369a)
 
 ### Bug Fixes
 
