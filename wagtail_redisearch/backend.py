@@ -121,6 +121,8 @@ def value_to_redis(value) -> Union[str, int]:
     Convert value to a redis-compatible type
     >>> value_to_redis(1)
     1
+    >>> value_to_redis(1.0)
+    1.0
     >>> value_to_redis(True)
     1
     >>> value_to_redis("wagtail")
@@ -144,6 +146,8 @@ def value_to_redis(value) -> Union[str, int]:
     elif isinstance(value, bool):
         return int(value)
     elif isinstance(value, int):
+        return value
+    elif isinstance(value, float):
         return value
     elif isinstance(value, list):
         try:
