@@ -138,7 +138,7 @@ def value_to_redis(value) -> Union[str, int]:
     >>> value_to_redis(date(2020, 1, 1))
     1577836800.0
     >>> value_to_redis(time(11, 55, tzinfo=timezone.utc))
-    '11:55:00+00:00'
+    '115500'
     >>> value_to_redis(UUID("5343fec8-de40-47ff-ac3b-65374f87dc61"))
     '5343fec8-de40-47ff-ac3b-65374f87dc61'
     >>> value_to_redis(None)
@@ -158,7 +158,7 @@ def value_to_redis(value) -> Union[str, int]:
         except TypeError:
             return ", ".join([str(v) for v in value])
     elif isinstance(value, time):
-        return value.isoformat()
+        return f"{value.hour:02d}{value.minute:02d}{value.second:02d}"
     elif isinstance(value, datetime):
         return value.timestamp()
     elif isinstance(value, date):
