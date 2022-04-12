@@ -49,3 +49,9 @@ testpaths = ["tests", "wagtail_redisearch"]
 
 [tool.coverage.report]
 omit = ["*/tests/*", "*/integration/*"]
+
+[tool.isort]
+multi_line_output = 3
+known_django = "django"
+known_wagtail = "wagtail"
+sections = "FUTURE,STDLIB,DJANGO,WAGTAIL,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"

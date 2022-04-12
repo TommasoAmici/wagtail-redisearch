@@ -2,7 +2,6 @@ from datetime import date, datetime, time
 from typing import List, Union
 from uuid import UUID
 
-import redis
 from django.db import models
 from django.db.models.lookups import (
     Exact,
@@ -13,11 +12,7 @@ from django.db.models.lookups import (
     Lookup,
 )
 from django.db.models.sql.where import SubqueryConstraint, WhereNode
-from redis import Redis
-from redis.commands.search.field import NumericField, TagField, TextField
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
-from redis.commands.search.query import Query
-from redis.commands.search.querystring import DistjunctUnion, IntersectNode, UnionNode
+
 from wagtail.search.backends.base import (
     BaseSearchBackend,
     BaseSearchResults,
@@ -34,6 +29,13 @@ from wagtail.search.index import (
     class_is_indexed,
 )
 from wagtail.search.query import And, Boost, MatchAll, Not, Or, Phrase, PlainText
+
+import redis
+from redis import Redis
+from redis.commands.search.field import NumericField, TagField, TextField
+from redis.commands.search.indexDefinition import IndexDefinition, IndexType
+from redis.commands.search.query import Query
+from redis.commands.search.querystring import DistjunctUnion, IntersectNode, UnionNode
 
 WagtailQuery = Union[str, PlainText, Phrase, And, Or, Not, MatchAll]
 WagtailSearchFields = Union[List[str], None]

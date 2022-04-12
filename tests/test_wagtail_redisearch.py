@@ -3,10 +3,13 @@ from datetime import datetime, timezone
 from django.core.management import call_command
 from django.db.models import Q
 from django.test import TestCase
-from integration.home.models import BasePage
-from redis.commands.search.field import NumericField, TagField, TextField
+
 from wagtail.core.models import Page
 from wagtail.search.index import SearchField
+
+from redis.commands.search.field import NumericField, TagField, TextField
+
+from integration.home.models import BasePage
 from wagtail_redisearch.backend import (
     RediSearchBackend,
     RediSearchModelIndex,
