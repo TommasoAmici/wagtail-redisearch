@@ -15,6 +15,7 @@ from django.db.models.lookups import (
 from django.db.models.sql.where import SubqueryConstraint, WhereNode
 from redis import Redis
 from redis.commands.search.field import NumericField, TagField, TextField
+from redis.commands.search.indexDefinition import IndexDefinition
 from redis.commands.search.query import Query
 from redis.commands.search.querystring import DistjunctUnion, IntersectNode, UnionNode
 from wagtail.search.backends.base import (
@@ -178,8 +179,12 @@ class RediSearchModelIndex:
         self.model = model
         self.fields = model.search_fields
 
+    @property
+    def index_prefix(self):
+        return f"{self.name}:"
+
     def document_key(self, document_id):
-        return f"{self.name}:{document_id}"
+        return f"{self.index_prefix}{document_id}"
 
     @property
     def ft(self):
@@ -188,7 +193,10 @@ class RediSearchModelIndex:
     def create(self):
         mapping = {"wagtail_id": NumericField("wagtail_id")}
         try:
-            self.ft.create_index(fields=mapping.values())
+            self.ft.create_index(
+                fields=mapping.values(),
+                definition=IndexDefinition(prefix=[self.index_prefix]),
+            )
             return self
         except redis.exceptions.ResponseError as e:
             if str(e) == "Index already exists":
