@@ -218,13 +218,13 @@ class RediSearchModelIndex:
                     field = TagField(field.field_name)
                     self.ft.alter_schema_add(fields=[field])
 
-    def add_item(self, item, fields):
+    def add_item(self, item):
         # Make sure the object can be indexed
         if not class_is_indexed(item.__class__):
             return
 
         mapping = {"wagtail_id": item.id}
-        for field in fields:
+        for field in item.search_fields:
             if (
                 isinstance(field, SearchField)
                 or isinstance(field, FilterField)
@@ -241,7 +241,7 @@ class RediSearchModelIndex:
         if not class_is_indexed(model):
             return
         for item in items:
-            self.add_item(item, model.search_fields)
+            self.add_item(item)
 
     def delete_item(self, item):
         # Make sure the object can be indexed
