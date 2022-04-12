@@ -2,12 +2,15 @@ from datetime import datetime, timezone
 
 from django.db.models import Q
 from integration.home.models import BasePage
+from redis.commands.search.field import NumericField, TagField, TextField
 from wagtail.core.models import Page
+from wagtail.search.index import SearchField
 from wagtail_redisearch.backend import (
     RediSearchBackend,
     RediSearchModelIndex,
     build_filters,
     get_model_root,
+    get_redis_field,
 )
 
 
@@ -74,6 +77,24 @@ def test_build_filters():
         f
         == "@live:{1} @first_published_at:[1577836800.0 1577836800.0] @search_description:{foo} -@wagtail_id:[123 123]"
     )
+
+
+def test_get_redis_field():
+    have = get_redis_field(BasePage, SearchField("test_text_field", boost=3))
+    want = TextField("test_text_field", weight=3)
+    assert have.args == want.args
+
+    have = get_redis_field(BasePage, SearchField("test_text_field"))
+    want = TextField("test_text_field", weight=1)
+    assert have.args == want.args
+
+    have = get_redis_field(BasePage, SearchField("test_integer_field"))
+    want = NumericField("test_integer_field")
+    assert have.args == want.args
+
+    have = get_redis_field(BasePage, SearchField("test_boolean_field"))
+    want = TagField("test_boolean_field")
+    assert have.args == want.args
 
 
 def test_RediSearchModelIndex():
