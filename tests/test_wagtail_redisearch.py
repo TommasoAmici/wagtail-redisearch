@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 
+from django.core.management import call_command
 from django.db.models import Q
+from django.test import TestCase
 from integration.home.models import BasePage
 from redis.commands.search.field import NumericField, TagField, TextField
 from wagtail.core.models import Page
@@ -101,3 +103,33 @@ def test_RediSearchModelIndex():
     backend = RediSearchBackend({})
     index = RediSearchModelIndex(backend, "wagtail_Page", Page)
     assert index.document_key(123) == "wagtail_Page:123"
+
+
+class SearchPages(TestCase):
+    fixtures = ["pages.json"]
+
+    def setUp(self, *args, **kwargs):
+        call_command("update_index", *args, **kwargs)
+
+    def test_full_text_search(self):
+        first_page = BasePage.objects.get(id=3)
+        second_page = BasePage.objects.get(id=4)
+
+        qs = BasePage.objects.search("first page")
+        assert first_page in qs
+        assert second_page not in qs
+
+        qs = BasePage.objects.live().search("page")
+        assert first_page in qs
+        assert second_page in qs
+
+        qs = BasePage.objects.exclude(id=3).search("first page")
+        assert first_page not in qs
+
+        qs = BasePage.objects.filter(test_integer_field__gt=0).search("page")
+        assert first_page in qs
+        assert second_page in qs
+
+        qs = BasePage.objects.filter(test_integer_field__gt=300).search("page")
+        assert first_page not in qs
+        assert second_page not in qs

@@ -10,12 +10,24 @@ PYM=poetry run python manage.py
 run:
 	${PYM} runserver
 
+cleandb:
+	rm db.sqlite3
+
+initdb: cleandb migrate loaddata
+
 migrate:
 	${PYM} makemigrations
 	${PYM} migrate
 
 update-index:
 	${PYM} update_index
+
+FIXTURES = integration/home/fixtures/pages.json
+dumpdata:
+	${PYM} dumpdata > ${FIXTURES}
+
+loaddata:
+	${PYM} loaddata ${FIXTURES}
 
 shell:
 	${PYM} shell
