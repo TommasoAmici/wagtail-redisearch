@@ -119,6 +119,10 @@ class SearchPages(TestCase):
         assert first_page in qs
         assert second_page not in qs
 
+        qs = BasePage.objects.autocomplete("firs")
+        assert first_page in qs
+        assert second_page not in qs
+
         qs = BasePage.objects.live().search("page")
         assert first_page in qs
         assert second_page in qs
