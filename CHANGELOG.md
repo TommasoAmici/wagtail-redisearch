@@ -4,9 +4,24 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2022-04-12
+
+[cf919a6](cf919a65ddf992afd843b131172a99dd5dc814b1)...[2957229](295722935e045efc3d7bab396dad31d7565ebc10)
+
+### Bug Fixes
+
+- Add_items doesn't expect a fields argument ([09f5c4b](09f5c4b52aa67290671ca8e87bdce4d3f0953d2e))
+- Error when converting date objects to timestamps ([0fa7b29](0fa7b29e9d00a102de427ec2102ccf2022386356))
+- Error when converting float to redis type ([5ad1bf7](5ad1bf7544f3639a8212c5b82d1c590538305ab3))
+- Error when converting time objects to redis type ([2957229](295722935e045efc3d7bab396dad31d7565ebc10))
+
+### Ci
+
+- Use provided cliff config when generating changelog ([caad0ad](caad0ad7032932a1e656c5d1e91ad38e4d003a55))
+
 ## [0.3.0] - 2022-04-11
 
-[29d0bf2](29d0bf24638df1ba53bea75b121f390190e6d431)...[9b3d2f0](9b3d2f0b3d19062f3c28dfc8e1f5320e4a17a898)
+[29d0bf2](29d0bf24638df1ba53bea75b121f390190e6d431)...[cf919a6](cf919a65ddf992afd843b131172a99dd5dc814b1)
 
 ### Features
 
