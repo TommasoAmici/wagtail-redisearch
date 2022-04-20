@@ -13,6 +13,7 @@ from integration.home.models import BasePage
 from wagtail_redisearch.backend import (
     RediSearchBackend,
     RediSearchModelIndex,
+    build_filter_fields,
     build_filters,
     get_model_root,
     get_redis_field,
@@ -22,6 +23,19 @@ from wagtail_redisearch.backend import (
 def test_get_model_root():
     assert get_model_root(Page) == Page
     assert get_model_root(BasePage) == Page
+
+
+def test_build_filter_fields():
+    qs = BasePage.objects.all()
+
+    f = build_filter_fields(qs, ["title", "body"])
+    assert f == "title|body"
+
+    f = build_filter_fields(qs, ["author"])
+    assert f == "author__name|author__date_of_birth"
+
+    f = build_filter_fields(qs, ["title", "author"])
+    assert f == "title|author__name|author__date_of_birth"
 
 
 def test_build_filters():
@@ -115,54 +129,54 @@ class SearchPages(TestCase):
         call_command("update_index", *args, **kwargs)
 
     def test_full_text_search(self):
-        first_page = BasePage.objects.get(id=3)
-        second_page = BasePage.objects.get(id=4)
-        third_page = BasePage.objects.get(id=5)
+        great_gatsby = BasePage.objects.get(id=4)
+        beautiful_damned = BasePage.objects.get(id=5)
+        sun_rises = BasePage.objects.get(id=7)
 
-        qs = BasePage.objects.search("first page")
-        assert first_page in qs
-        assert second_page not in qs
-        assert third_page not in qs
+        qs = BasePage.objects.search("fitzgerald")
+        assert great_gatsby in qs
+        assert beautiful_damned in qs
+        assert sun_rises not in qs
 
-        qs = BasePage.objects.autocomplete("firs")
-        assert first_page in qs
-        assert second_page not in qs
-        assert third_page not in qs
+        qs = BasePage.objects.search("fitzgerald", fields=["author"])
+        assert great_gatsby in qs
+        assert beautiful_damned in qs
+        assert sun_rises not in qs
 
-        qs = BasePage.objects.search("page")
-        assert first_page in qs
-        assert second_page in qs
-        assert third_page in qs
+        qs = BasePage.objects.autocomplete("gats")
+        assert great_gatsby in qs
+        assert beautiful_damned not in qs
+        assert sun_rises not in qs
 
-        qs = BasePage.objects.exclude(id=3).search("page")
-        assert first_page not in qs
-        assert second_page in qs
-        assert third_page in qs
+        qs = BasePage.objects.exclude(id=great_gatsby.id).search("fitzgerald")
+        assert great_gatsby not in qs
+        assert beautiful_damned in qs
+        assert sun_rises not in qs
 
-        qs = BasePage.objects.filter(test_integer_field__gt=0).search("page")
-        assert first_page in qs
-        assert second_page in qs
-        assert third_page in qs
+        qs = BasePage.objects.filter(test_integer_field__gt=0).search("a")
+        assert great_gatsby in qs
+        assert beautiful_damned in qs
+        assert sun_rises in qs
 
-        qs = BasePage.objects.filter(test_integer_field__gte=300).search("page")
-        assert first_page not in qs
-        assert second_page not in qs
-        assert third_page in qs
-
-        qs = (
-            BasePage.objects.filter(id__gt=2)
-            .order_by("-test_integer_field")
-            .search("page", order_by_relevance=False)
-        ).queryset
-        assert qs[0] == third_page
-        assert qs[1] == second_page
-        assert qs[2] == first_page
+        qs = BasePage.objects.filter(test_integer_field__gte=300).search("a")
+        assert great_gatsby not in qs
+        assert beautiful_damned not in qs
+        assert sun_rises in qs
 
         qs = (
-            BasePage.objects.filter(id__gt=2)
-            .order_by("test_integer_field")
-            .search("page", order_by_relevance=False)
+            BasePage.objects.order_by("-test_integer_field").search(
+                "page", order_by_relevance=False
+            )
         ).queryset
-        assert qs[0] == first_page
-        assert qs[1] == second_page
-        assert qs[2] == third_page
+        assert qs[0] == sun_rises
+        assert qs[1] == beautiful_damned
+        assert qs[2] == great_gatsby
+
+        qs = (
+            BasePage.objects.order_by("test_integer_field").search(
+                "page", order_by_relevance=False
+            )
+        ).queryset
+        assert qs[0] == great_gatsby
+        assert qs[1] == beautiful_damned
+        assert qs[2] == sun_rises

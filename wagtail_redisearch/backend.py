@@ -88,8 +88,9 @@ redis_field_from_type = {
 
 
 def get_redis_field(
-    model, field, sortable=False, no_index=False
+    model, field, sortable=False, no_index=False, field_prefix=""
 ) -> Union[TextField, NumericField]:
+    field_name = f"{field_prefix}{field.field_name}"
     field_type = field.get_type(model)
     redis_field = redis_field_from_type.get(field_type, None)
     if redis_field is TextField:
@@ -100,19 +101,19 @@ def get_redis_field(
         except AttributeError:
             pass
         return TextField(
-            field.field_name,
+            field_name,
             weight=weight,
             sortable=sortable,
             no_index=no_index,
         )
     elif redis_field is NumericField:
         return NumericField(
-            field.field_name,
+            field_name,
             sortable=sortable,
             no_index=no_index,
         )
     elif redis_field is TagField:
-        return TagField(field.field_name)
+        return TagField(field_name)
     else:
         raise SearchFieldError(
             f"Field type {field_type} is not yet mapped in wagtail-redisearch"
@@ -217,20 +218,17 @@ class RediSearchModelIndex:
                 pass
 
     def add_model(self, model):
-        search_fields = model.get_searchable_search_fields()
-        filterable_fields = model.get_filterable_search_fields()
+        search_fields = model.get_search_fields()
 
         for field in search_fields:
-            if isinstance(field, SearchField):
-                field = get_redis_field(model, field)
+            if isinstance(field, SearchField) or isinstance(field, AutocompleteField):
+                redis_field = get_redis_field(model, field)
                 try:
-                    self.ft.alter_schema_add(fields=[field])
+                    self.ft.alter_schema_add(fields=[redis_field])
                 except redis.exceptions.ResponseError as e:
                     if "Duplicate field in schema" in str(e):
                         pass
-
-        for field in filterable_fields:
-            if isinstance(field, FilterField):
+            elif isinstance(field, FilterField):
                 info = self.ft.info()
                 field_name_b = field.field_name.encode()
                 field_exists = any(
@@ -239,8 +237,18 @@ class RediSearchModelIndex:
                 if field_exists:
                     continue
                 else:
-                    field = TagField(field.field_name)
-                    self.ft.alter_schema_add(fields=[field])
+                    redis_field = TagField(field.field_name)
+                    self.ft.alter_schema_add(fields=[redis_field])
+            elif isinstance(field, RelatedFields):
+                for sub_field in field.fields:
+                    redis_field = get_redis_field(
+                        model, sub_field, field_prefix=f"{field.field_name}__"
+                    )
+                    try:
+                        self.ft.alter_schema_add(fields=[redis_field])
+                    except redis.exceptions.ResponseError as e:
+                        if "Duplicate field in schema" in str(e):
+                            pass
 
     def add_item(self, item):
         # Make sure the object can be indexed
@@ -257,8 +265,15 @@ class RediSearchModelIndex:
                 value = field.get_value(item)
                 mapping[field.field_name] = value_to_redis(value)
             elif isinstance(field, RelatedFields):
-                # TODO RelatedFields
-                pass
+                related = field.get_value(item)
+                for sub_field in field.fields:
+                    field_name = f"{field.field_name}__{sub_field.field_name}"
+                    try:
+                        value = sub_field.get_value(related)
+                    except AttributeError:
+                        # this may happen when a foreign key allows nulls
+                        value = None
+                    mapping[field_name] = value_to_redis(value)
         self.client.hset(self.document_key(item.id), mapping=mapping)
 
     def add_items(self, model, items):
@@ -298,18 +313,33 @@ def build_query_string_autocomplete(
     # if no fields are explicitly provided, search all autocomplete fields
     if fields is None:
         fields = [a.field_name for a in queryset.model.get_autocomplete_search_fields()]
-    query_string = f"@{build_filter_fields(fields)}:{query.query_string.rstrip()}*"
+    query_string = (
+        f"@{build_filter_fields(queryset, fields)}:{query.query_string.rstrip()}*"
+    )
     return query_string
 
 
-def build_filter_fields(fields: List[str]) -> str:
+def build_filter_fields(queryset: models.QuerySet, fields: List[str]) -> str:
     """
     Returns union of fields to restrict search to those fields.
+    Related fields are expanded to search against all sub-fields.
 
-    >>> build_filter_fields(["title", "search_description"])
+    >>> build_filter_fields(queryset, ["title", "search_description"]) # doctest: +SKIP
     'title|search_description'
     """
-    return UnionNode(*fields).to_string(with_parens=False)
+
+    # expand related fields
+    expanded_fields = []
+    field_map = {f.field_name: f for f in queryset.model.search_fields}
+    for field in fields:
+        model_field = field_map[field]
+        if isinstance(model_field, RelatedFields):
+            for sub_field in model_field.fields:
+                expanded_fields.append(f"{field}__{sub_field.field_name}")
+        else:
+            expanded_fields.append(field)
+
+    return UnionNode(*expanded_fields).to_string(with_parens=False)
 
 
 def build_query_string(
@@ -332,13 +362,13 @@ def build_query_string(
             query_string = query.query_string
         if fields is None:
             return query_string
-        return f"@{build_filter_fields(fields)}:{query_string}"
+        return f"@{build_filter_fields(queryset, fields)}:{query_string}"
 
     elif isinstance(query, Phrase):
         if fields is None:
             return f'"{query.query_string}"'
         else:
-            return f'@{build_filter_fields(fields)}:"{query.query_string}"'
+            return f'@{build_filter_fields(queryset, fields)}:"{query.query_string}"'
 
     elif isinstance(query, And):
         return IntersectNode(
@@ -378,7 +408,7 @@ def check_fields(
         searchable_fields = queryset.model.get_autocomplete_search_fields()
         error_msg = "index.AutocompleteField"
     else:
-        searchable_fields = queryset.model.get_searchable_search_fields()
+        searchable_fields = queryset.model.get_search_fields()
         error_msg = "index.SearchField"
 
     allowed_fields = {field.field_name for field in searchable_fields}
