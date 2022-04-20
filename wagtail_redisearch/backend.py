@@ -399,11 +399,12 @@ def get_filterable_field(queryset: models.QuerySet, field_name: str):
     ).get(field_name, None)
 
 
-def build_sort_by(queryset: models.QuerySet, order_by_relevance=True) -> str:
+def build_sort_by(
+    query: Query, queryset: models.QuerySet, order_by_relevance=True
+) -> Query:
     if order_by_relevance:
-        return ""
+        return query
 
-    sort_by = []
     for field_name in queryset.query.order_by:
         ascending = False
 
@@ -419,9 +420,8 @@ def build_sort_by(queryset: models.QuerySet, order_by_relevance=True) -> str:
                 f'index.FilterField("{field_name}") to {queryset.model.__name__}.search_fields.',
                 field_name=field_name,
             )
-
-        sort_by.append((field_name, ascending))
-    return " ".join([f"SORTBY {s[0]} {'ASC' if s[1] else 'DESC'}" for s in sort_by])
+        query = query.sort_by(field_name, ascending)
+    return query
 
 
 def build_filters(lookup: Lookup, negated=False) -> str:
@@ -510,15 +510,16 @@ def build_query(
 
     check_fields(fields, queryset, autocomplete)
 
-    return Query(
+    redis_query = Query(
         " ".join(
             [
                 build_query_string(query, queryset, fields, autocomplete),
-                build_sort_by(queryset, order_by_relevance),
                 build_filters(queryset.query.where),
             ]
         )
     )
+    redis_query = build_sort_by(redis_query, queryset, order_by_relevance)
+    return redis_query
 
 
 class RediSearchResults(BaseSearchResults):

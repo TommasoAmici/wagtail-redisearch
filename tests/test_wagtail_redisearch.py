@@ -117,26 +117,52 @@ class SearchPages(TestCase):
     def test_full_text_search(self):
         first_page = BasePage.objects.get(id=3)
         second_page = BasePage.objects.get(id=4)
+        third_page = BasePage.objects.get(id=5)
 
         qs = BasePage.objects.search("first page")
         assert first_page in qs
         assert second_page not in qs
+        assert third_page not in qs
 
         qs = BasePage.objects.autocomplete("firs")
         assert first_page in qs
         assert second_page not in qs
+        assert third_page not in qs
 
-        qs = BasePage.objects.live().search("page")
+        qs = BasePage.objects.search("page")
         assert first_page in qs
         assert second_page in qs
+        assert third_page in qs
 
-        qs = BasePage.objects.exclude(id=3).search("first page")
+        qs = BasePage.objects.exclude(id=3).search("page")
         assert first_page not in qs
+        assert second_page in qs
+        assert third_page in qs
 
         qs = BasePage.objects.filter(test_integer_field__gt=0).search("page")
         assert first_page in qs
         assert second_page in qs
+        assert third_page in qs
 
-        qs = BasePage.objects.filter(test_integer_field__gt=300).search("page")
+        qs = BasePage.objects.filter(test_integer_field__gte=300).search("page")
         assert first_page not in qs
         assert second_page not in qs
+        assert third_page in qs
+
+        qs = (
+            BasePage.objects.filter(id__gt=2)
+            .order_by("-test_integer_field")
+            .search("page", order_by_relevance=False)
+        ).queryset
+        assert qs[0] == third_page
+        assert qs[1] == second_page
+        assert qs[2] == first_page
+
+        qs = (
+            BasePage.objects.filter(id__gt=2)
+            .order_by("test_integer_field")
+            .search("page", order_by_relevance=False)
+        ).queryset
+        assert qs[0] == first_page
+        assert qs[1] == second_page
+        assert qs[2] == third_page
