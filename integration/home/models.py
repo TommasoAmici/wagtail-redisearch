@@ -1,12 +1,26 @@
 from django.db import models
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+
+from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel, StreamFieldPanel
 from wagtail.core.fields import RichTextField
 from wagtail.core.models import Page
 from wagtail.search import index
 
+from modelcluster.fields import ParentalKey
+
+
+class AuthorPage(Page):
+    name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
+
+    content_panels = Page.content_panels + [
+        FieldPanel("name"),
+        FieldPanel("date_of_birth"),
+    ]
+
 
 class BasePage(Page):
     body = RichTextField()
+    author = ParentalKey(AuthorPage, on_delete=models.SET_NULL, null=True)
     test_text_field = models.TextField()
     test_char_field = models.CharField(max_length=100)
     test_email_field = models.EmailField()
@@ -26,6 +40,7 @@ class BasePage(Page):
     test_uuid_field = models.UUIDField()
 
     content_panels = Page.content_panels + [
+        PageChooserPanel("author"),
         StreamFieldPanel("body"),
         FieldPanel("test_text_field"),
         FieldPanel("test_char_field"),
@@ -65,4 +80,11 @@ class BasePage(Page):
         index.SearchField("test_date_time_field"),
         index.SearchField("test_time_field"),
         index.SearchField("test_uuid_field"),
+        index.RelatedFields(
+            "author",
+            [
+                index.SearchField("name"),
+                index.FilterField("date_of_birth"),
+            ],
+        ),
     ]
