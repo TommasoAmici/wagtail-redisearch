@@ -19,9 +19,14 @@ backend in Wagtail.
 
 Install [`wagtail-redisearch`](https://pypi.org/project/wagtail-redisearch/) from PyPi.
 
-In your `settings.py` configure your search backend as follows:
+In your `settings.py` add `"wagtail_redisearch"` to `INSTALLED_APPS` and configure your search backend as follows:
 
 ```py
+INSTALLED_APPS = [
+  "wagtail_redisearch",
+  ...
+]
+
 WAGTAILSEARCH_BACKENDS = {
     "default": {
         "BACKEND": "wagtail_redisearch",
