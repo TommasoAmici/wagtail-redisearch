@@ -4,9 +4,21 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2022-04-20
+
+[ae09850](ae09850d64e7560888251d434547aad1e661b041)...[e92e091](e92e091162dd9b9d41ee880e1697ca2e8dcab90c)
+
+### Bug Fixes
+
+- Applying any ordering would result in empty search results ([e92e091](e92e091162dd9b9d41ee880e1697ca2e8dcab90c))
+
+### Documentation
+
+- Added instructions to install app in Django settings ([af040f8](af040f8f17d891e0251026fd0a1baf9a79c06bcb))
+
 ## [0.3.2] - 2022-04-12
 
-[48f93de](48f93de2e765771100a2c340f23bb77afc5d369a)...[d01440e](d01440e142de381b2612f5daa3d3d7cafd6dadc5)
+[48f93de](48f93de2e765771100a2c340f23bb77afc5d369a)...[ae09850](ae09850d64e7560888251d434547aad1e661b041)
 
 ### Bug Fixes
 
