@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2022-04-21
+
+[4c4baba](4c4babaac36ca4246b3c3cec2114bcbcddaa0c6d)...[4125466](4125466ce53625d04b63061d40bbdea7cdd98255)
+
+### Features
+
+- Added support for RelatedFields ([40bc184](40bc184080e6fd331ea339325f2f31359167505d))
+
 ## [0.3.3] - 2022-04-20
 
-[ae09850](ae09850d64e7560888251d434547aad1e661b041)...[e92e091](e92e091162dd9b9d41ee880e1697ca2e8dcab90c)
+[ae09850](ae09850d64e7560888251d434547aad1e661b041)...[4c4baba](4c4babaac36ca4246b3c3cec2114bcbcddaa0c6d)
 
 ### Bug Fixes
 
