@@ -24,6 +24,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
+    "django_extensions",
     "integration.home",
     "wagtail_redisearch",
     "wagtail.contrib.forms",

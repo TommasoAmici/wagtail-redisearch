@@ -30,7 +30,7 @@ loaddata:
 	${PYM} loaddata ${FIXTURES}
 
 shell:
-	${PYM} shell
+	${PYM} shell_plus
 
 admin-user:
 	${PYM} shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@example.com', 'admin', first_name='Admin', last_name='Admin')"

@@ -249,6 +249,8 @@ class RediSearchModelIndex:
                     except redis.exceptions.ResponseError as e:
                         if "Duplicate field in schema" in str(e):
                             pass
+            else:
+                breakpoint()
 
     def add_item(self, item):
         # Make sure the object can be indexed
@@ -274,6 +276,8 @@ class RediSearchModelIndex:
                         # this may happen when a foreign key allows nulls
                         value = None
                     mapping[field_name] = value_to_redis(value)
+            else:
+                breakpoint()
         self.client.hset(self.document_key(item.id), mapping=mapping)
 
     def add_items(self, model, items):

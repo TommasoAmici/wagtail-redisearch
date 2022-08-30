@@ -3,7 +3,17 @@
   <ul>
     {% for result in search_results %}
       <li>
-        <h4>{{ result }}</h4>
+        <h4>
+          <form>
+            {% csrf_token %}
+            <input type="hidden" name="suggestion" value="{{ result }}" />
+            <a
+              href="{% pageurl result %}"
+              hx-post="{% url "suggestion-add" %}"
+              hx-trigger="click once"
+            >{{ result }}</a>
+          </form>
+        </h4>
         {% if result.search_description %}
           {{ result.search_description|safe }}
         {% endif %}

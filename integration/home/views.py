@@ -2,9 +2,12 @@ from http.client import HTTPResponse
 
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from redis.commands.search.suggestion import Suggestion
+
 from wagtail.core.models import Page
 from wagtail.search.backends import get_search_backend
+
+from redis.commands.search.suggestion import Suggestion
+
 from wagtail_redisearch.backend import RediSearchBackend
 
 
@@ -32,3 +35,15 @@ def search(request):
         },
     )
 
+
+class SuggestionAddView(View):
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        backend: RediSearchBackend = get_search_backend()
+        backend.client.ft().sugadd(
+            "wagtail__suggestions", Suggestion(request.POST.get("suggestion"))
+        )
+        response = HTTPResponse()
+        response.status = 200
+        return response
